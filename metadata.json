@@ -1,0 +1,5 @@
+{
+  "name": "Sistema de Controle de Vendas e Estoque",
+  "description": "Um aplicativo web móvel para gerenciar produtos, registrar vendas e controlar o estoque, com insights de vendas alimentados por IA.",
+  "requestFramePermissions": []
+}
