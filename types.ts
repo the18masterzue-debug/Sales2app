@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -17,8 +16,10 @@ export interface Sale {
 
 export enum ViewEnum {
     DASHBOARD = 'dashboard',
+    VENDAS = 'vendas',
     PRODUCTS = 'produtos',
-    HISTORY = 'histórico'
+    HISTORY = 'histórico',
+    CONFIGURACOES = 'configurações'
 }
 
 export type View = ViewEnum;

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import type { Product } from '../../types';
 
@@ -6,9 +5,10 @@ interface RecordSaleFormProps {
     products: Product[];
     onRecordSale: (sale: { productId: string; quantitySold: number; totalPrice: number; }) => boolean;
     onClose: () => void;
+    initialProduct: Product | null;
 }
 
-const RecordSaleForm: React.FC<RecordSaleFormProps> = ({ products, onRecordSale, onClose }) => {
+const RecordSaleForm: React.FC<RecordSaleFormProps> = ({ products, onRecordSale, onClose, initialProduct }) => {
     const [productId, setProductId] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [error, setError] = useState('');
@@ -17,10 +17,12 @@ const RecordSaleForm: React.FC<RecordSaleFormProps> = ({ products, onRecordSale,
     const selectedProduct = products.find(p => p.id === productId);
 
     useEffect(() => {
-        if(availableProducts.length > 0 && !productId) {
+        if (initialProduct) {
+            setProductId(initialProduct.id);
+        } else if(availableProducts.length > 0 && !productId) {
             setProductId(availableProducts[0].id)
         }
-    }, [availableProducts, productId]);
+    }, [availableProducts, productId, initialProduct]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -53,7 +55,7 @@ const RecordSaleForm: React.FC<RecordSaleFormProps> = ({ products, onRecordSale,
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
                 <label htmlFor="product" className="block text-sm font-medium text-slate-700">Produto</label>
-                <select id="product" value={productId} onChange={e => setProductId(e.target.value)} required className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                <select id="product" value={productId} onChange={e => setProductId(e.target.value)} required className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md text-slate-900">
                     {availableProducts.length === 0 ? (
                         <option disabled>Nenhum produto com estoque</option>
                     ) : (
@@ -65,7 +67,7 @@ const RecordSaleForm: React.FC<RecordSaleFormProps> = ({ products, onRecordSale,
             </div>
             <div>
                 <label htmlFor="quantity" className="block text-sm font-medium text-slate-700">Quantidade</label>
-                <input type="number" id="quantity" value={quantity} onChange={e => setQuantity(parseInt(e.target.value, 10))} required min="1" max={selectedProduct?.quantity || 1} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"/>
+                <input type="number" id="quantity" value={quantity} onChange={e => setQuantity(parseInt(e.target.value, 10))} required min="1" max={selectedProduct?.quantity || 1} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm text-slate-900"/>
             </div>
 
             {selectedProduct && (

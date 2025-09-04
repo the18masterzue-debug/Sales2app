@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import type { Product, Sale } from '../../types';
 import { ArrowUpIcon } from '../icons/Icons';
@@ -6,17 +5,13 @@ import { ArrowUpIcon } from '../icons/Icons';
 interface DashboardProps {
     products: Product[];
     sales: Sale[];
+    salesGoal: number;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ products, sales }) => {
+const Dashboard: React.FC<DashboardProps> = ({ products, sales, salesGoal }) => {
 
     const totalRevenue = useMemo(() =>
         sales.reduce((acc, sale) => acc + sale.totalPrice, 0),
-        [sales]
-    );
-
-    const totalProductsSold = useMemo(() =>
-        sales.reduce((acc, sale) => acc + sale.quantitySold, 0),
         [sales]
     );
 
@@ -25,15 +20,20 @@ const Dashboard: React.FC<DashboardProps> = ({ products, sales }) => {
         [products]
     );
 
+    const goalProgressPercentage = useMemo(() => {
+        if (salesGoal <= 0) return 0;
+        return Math.min((totalRevenue / salesGoal) * 100, 100);
+    }, [totalRevenue, salesGoal]);
+
+
     return (
-        <div className="flex flex-col gap-4">
-            {/* Card de Saldo Atual */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Card de Receita Total */}
             <div className="bg-lime-card text-black p-6 rounded-3xl shadow-lg">
                 <div className="flex justify-between items-center text-sm font-medium">
                     <div className="bg-black text-white rounded-full p-2">
                         <ArrowUpIcon className="w-4 h-4" />
                     </div>
-                    <span>+3,51%</span>
                 </div>
                 <div className="mt-4">
                     <p className="text-5xl font-bold tracking-tight">
@@ -43,22 +43,21 @@ const Dashboard: React.FC<DashboardProps> = ({ products, sales }) => {
                 </div>
             </div>
 
-            {/* Card de Progresso */}
+            {/* Card de Meta Mensal */}
             <div className="bg-white text-black p-6 rounded-3xl shadow-lg">
-                <p className="text-sm font-medium text-slate-600">Progresso de Vendas</p>
-                <div className="flex items-center mt-2">
-                    <ArrowUpIcon className="w-10 h-10" />
-                    <p className="text-6xl font-bold tracking-tighter">{totalProductsSold}</p>
+                <p className="text-sm font-medium text-slate-600">Meta Mensal</p>
+                <div className="mt-2">
+                    <span className="text-4xl font-bold">R$ {totalRevenue.toFixed(2).replace('.',',')}</span>
+                    <span className="text-lg text-slate-500"> / R$ {salesGoal.toFixed(2).replace('.',',')}</span>
                 </div>
-                 <div className="mt-4">
-                    <span className="inline-block bg-teal-pill text-white text-xs font-semibold px-3 py-1 rounded-full">
-                        +{products.length} tipos de produtos
-                    </span>
+                <div className="w-full bg-slate-200 rounded-full h-2.5 mt-4">
+                  <div className="bg-teal-pill h-2.5 rounded-full" style={{ width: `${goalProgressPercentage}%` }}></div>
                 </div>
+                 <p className="text-right text-sm font-medium mt-1 text-slate-600">{goalProgressPercentage.toFixed(0)}%</p>
             </div>
 
             {/* Card de Estoque Baixo */}
-            <div className="bg-purple-card text-white p-6 rounded-3xl shadow-lg">
+            <div className="bg-purple-card text-white p-6 rounded-3xl shadow-lg md:col-span-2">
                 <p className="text-xs font-semibold tracking-wide">ALERTA</p>
                 <p className="text-sm font-medium mt-2">Estoque Baixo</p>
                 <p className="text-6xl font-bold tracking-tight mt-1">{lowStockItems}</p>
