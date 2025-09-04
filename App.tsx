@@ -125,8 +125,8 @@ const App: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen font-sans bg-slate-100 text-secondary pb-16">
-            <header className="bg-primary text-white shadow-md p-4 sticky top-0 z-10">
+        <div className="min-h-screen font-sans bg-main-dark-green text-light pb-16">
+            <header className="bg-main-dark-green text-light p-4 sticky top-0 z-10">
                 <h1 className="text-xl font-bold text-center capitalize">{activeView.replace('_', ' ')}</h1>
             </header>
             
