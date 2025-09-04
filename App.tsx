@@ -1,7 +1,9 @@
-import React, { useState, useCallback, useMemo } from 'react';
+
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import type { Product, Sale, View } from './types';
 import { ViewEnum } from './types';
 import useLocalStorage from './hooks/useLocalStorage';
+import { supabase } from './services/supabaseClient';
 import BottomNav from './components/BottomNav';
 import Dashboard from './components/pages/Dashboard';
 import ProductsList from './components/pages/ProductsList';
@@ -13,18 +15,9 @@ import AddProductForm from './components/forms/AddProductForm';
 import RecordSaleForm from './components/forms/RecordSaleForm';
 import { PlusIcon } from './components/icons/Icons';
 
-const sampleProducts: Product[] = [
-    { id: '1', name: 'Brigadeiro Gourmet', price: 4.50, quantity: 50, description: 'Clássico brigadeiro com chocolate belga.' },
-    { id: '2', name: 'Beijinho de Coco', price: 3.00, quantity: 35, description: 'Doce de coco cremoso e irresistível.' },
-    { id: '3', name: 'Bolo de Pote - Ninho com Nutella', price: 12.00, quantity: 15, description: 'Creme de Ninho com Nutella e massa fofinha.' },
-    { id: '4', name: 'Cookie com Gotas de Chocolate', price: 7.00, quantity: 8, description: 'Cookie crocante por fora e macio por dentro.' },
-    { id: '5', name: 'Brownie Recheado', price: 10.00, quantity: 20, description: 'Brownie de chocolate com recheio de doce de leite.' },
-];
-
-
 const App: React.FC = () => {
-    const [products, setProducts] = useLocalStorage<Product[]>('products', sampleProducts);
-    const [sales, setSales] = useLocalStorage<Sale[]>('sales', []);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [sales, setSales] = useState<Sale[]>([]);
     const [activeView, setActiveView] = useState<View>(ViewEnum.DASHBOARD);
     const [salesGoal, setSalesGoal] = useLocalStorage<number>('salesGoal', 1000);
 
@@ -33,13 +26,41 @@ const App: React.FC = () => {
     
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [saleProduct, setSaleProduct] = useState<Product | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    const handleAddProduct = (product: Omit<Product, 'id'>) => {
-        setProducts(prev => [...prev, { ...product, id: Date.now().toString() }]);
+    const fetchData = useCallback(async () => {
+        const { data: productsData, error: productsError } = await supabase.from('products').select('*').order('name', { ascending: true });
+        if (productsData) setProducts(productsData);
+        if (productsError) console.error('Error fetching products:', productsError);
+
+        const { data: salesData, error: salesError } = await supabase.from('sales').select('*').order('created_at', { ascending: false });
+        if (salesData) setSales(salesData);
+        if(salesError) console.error('Error fetching sales:', salesError);
+        
+        setLoading(false);
+    }, []);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    const handleAddProduct = async (product: Omit<Product, 'id' | 'created_at'>) => {
+        const { error } = await supabase.from('products').insert([product]);
+        if (!error) {
+            fetchData();
+        } else {
+            console.error('Error adding product:', error);
+        }
     };
 
-    const handleUpdateProduct = (updatedProduct: Product) => {
-        setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p));
+    const handleUpdateProduct = async (updatedProduct: Product) => {
+        const { id, created_at, ...updateData } = updatedProduct;
+        const { error } = await supabase.from('products').update(updateData).eq('id', updatedProduct.id);
+        if (!error) {
+            fetchData();
+        } else {
+            console.error('Error updating product:', error);
+        }
     };
 
     const handleEditProduct = (product: Product) => {
@@ -47,8 +68,13 @@ const App: React.FC = () => {
         setIsProductModalOpen(true);
     }
     
-    const handleDeleteProduct = (productId: string) => {
-      setProducts(prev => prev.filter(p => p.id !== productId));
+    const handleDeleteProduct = async (productId: number) => {
+      const { error } = await supabase.from('products').delete().eq('id', productId);
+      if (!error) {
+          fetchData();
+      } else {
+          console.error('Error deleting product:', error);
+      }
     }
 
     const openAddProductModal = () => {
@@ -56,14 +82,25 @@ const App: React.FC = () => {
         setIsProductModalOpen(true);
     };
 
-    const handleRecordSale = (sale: Omit<Sale, 'id' | 'date'>) => {
-        const product = products.find(p => p.id === sale.productId);
-        if (product && product.quantity >= sale.quantitySold) {
-            const newSale: Sale = { ...sale, id: Date.now().toString(), date: new Date().toISOString() };
-            setSales(prev => [newSale, ...prev]);
-            setProducts(prev => prev.map(p =>
-                p.id === sale.productId ? { ...p, quantity: p.quantity - sale.quantitySold } : p
-            ));
+    const handleRecordSale = async (sale: Omit<Sale, 'id' | 'created_at'>) => {
+        const product = products.find(p => p.id === sale.product_id);
+        if (product && product.quantity >= sale.quantity_sold) {
+            const { error: saleError } = await supabase.from('sales').insert([sale]);
+            if (saleError) {
+                console.error('Error recording sale:', saleError);
+                return false;
+            }
+
+            const newQuantity = product.quantity - sale.quantity_sold;
+            const { error: productError } = await supabase.from('products').update({ quantity: newQuantity }).eq('id', sale.product_id);
+            
+            if (productError) {
+                console.error('Error updating product quantity:', productError);
+                // Idealmente, a venda inserida seria revertida aqui (transação)
+                return false;
+            }
+
+            fetchData();
             return true;
         }
         return false;
@@ -80,6 +117,9 @@ const App: React.FC = () => {
     };
 
     const renderView = () => {
+        if (loading) {
+            return <div className="text-center p-10 text-light">Carregando dados...</div>
+        }
         switch (activeView) {
             case ViewEnum.DASHBOARD:
                 return <Dashboard products={products} sales={sales} salesGoal={salesGoal} />;
@@ -104,7 +144,6 @@ const App: React.FC = () => {
             </button>
           )
        }
-       // O botão de adicionar venda foi movido para a própria tela de Vendas (clicando no card)
        return null;
     }
 

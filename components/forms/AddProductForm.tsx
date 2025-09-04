@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import type { Product } from '../../types';
 
 interface AddProductFormProps {
-    onAddProduct: (product: Omit<Product, 'id'>) => void;
+    onAddProduct: (product: Omit<Product, 'id' | 'created_at'>) => void;
     onUpdateProduct: (product: Product) => void;
     existingProduct: Product | null;
     onClose: () => void;
@@ -39,7 +39,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onAddProduct, onUpdateP
         };
 
         if (existingProduct) {
-            onUpdateProduct({ ...productData, id: existingProduct.id });
+            onUpdateProduct({ ...existingProduct, ...productData });
         } else {
             onAddProduct(productData);
         }

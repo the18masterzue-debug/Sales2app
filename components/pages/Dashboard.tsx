@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import type { Product, Sale } from '../../types';
 import { ArrowUpIcon } from '../icons/Icons';
@@ -11,7 +12,7 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ products, sales, salesGoal }) => {
 
     const totalRevenue = useMemo(() =>
-        sales.reduce((acc, sale) => acc + sale.totalPrice, 0),
+        sales.reduce((acc, sale) => acc + sale.total_price, 0),
         [sales]
     );
 

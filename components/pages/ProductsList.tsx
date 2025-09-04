@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import type { Product } from '../../types';
 import { EditIcon, TrashIcon } from '../icons/Icons';
@@ -5,7 +6,7 @@ import { EditIcon, TrashIcon } from '../icons/Icons';
 interface ProductCardProps {
     product: Product;
     onEdit: (product: Product) => void;
-    onDelete: (productId: string) => void;
+    onDelete: (productId: number) => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDelete }) => {
@@ -51,7 +52,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDelete }) 
 interface ProductsListProps {
     products: Product[];
     onEdit: (product: Product) => void;
-    onDelete: (productId: string) => void;
+    onDelete: (productId: number) => void;
 }
 
 const ProductsList: React.FC<ProductsListProps> = ({ products, onEdit, onDelete }) => {
