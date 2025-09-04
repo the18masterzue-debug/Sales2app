@@ -13,9 +13,17 @@ import AddProductForm from './components/forms/AddProductForm';
 import RecordSaleForm from './components/forms/RecordSaleForm';
 import { PlusIcon } from './components/icons/Icons';
 
+const sampleProducts: Product[] = [
+    { id: '1', name: 'Brigadeiro Gourmet', price: 4.50, quantity: 50, description: 'Clássico brigadeiro com chocolate belga.' },
+    { id: '2', name: 'Beijinho de Coco', price: 3.00, quantity: 35, description: 'Doce de coco cremoso e irresistível.' },
+    { id: '3', name: 'Bolo de Pote - Ninho com Nutella', price: 12.00, quantity: 15, description: 'Creme de Ninho com Nutella e massa fofinha.' },
+    { id: '4', name: 'Cookie com Gotas de Chocolate', price: 7.00, quantity: 8, description: 'Cookie crocante por fora e macio por dentro.' },
+    { id: '5', name: 'Brownie Recheado', price: 10.00, quantity: 20, description: 'Brownie de chocolate com recheio de doce de leite.' },
+];
+
 
 const App: React.FC = () => {
-    const [products, setProducts] = useLocalStorage<Product[]>('products', []);
+    const [products, setProducts] = useLocalStorage<Product[]>('products', sampleProducts);
     const [sales, setSales] = useLocalStorage<Sale[]>('sales', []);
     const [activeView, setActiveView] = useState<View>(ViewEnum.DASHBOARD);
     const [salesGoal, setSalesGoal] = useLocalStorage<number>('salesGoal', 1000);

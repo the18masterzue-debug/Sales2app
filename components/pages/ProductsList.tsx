@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { Product } from '../../types';
+import { EditIcon, TrashIcon } from '../icons/Icons';
 
 interface ProductCardProps {
     product: Product;
@@ -8,7 +9,11 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDelete }) => {
-    const stockColor = product.quantity <= 5 ? 'text-red-500' : product.quantity <= 10 ? 'text-amber-500' : 'text-green-600';
+    const { stockColor, stockBgColor } = useMemo(() => {
+        if (product.quantity <= 5) return { stockColor: 'text-red-700', stockBgColor: 'bg-red-100' };
+        if (product.quantity <= 10) return { stockColor: 'text-amber-700', stockBgColor: 'bg-amber-100' };
+        return { stockColor: 'text-green-700', stockBgColor: 'bg-green-100' };
+    }, [product.quantity]);
 
     const handleDelete = () => {
         if (window.confirm(`Tem certeza que deseja excluir o produto "${product.name}"?`)) {
@@ -17,22 +22,26 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDelete }) 
     }
 
     return (
-        <div className="bg-white text-secondary p-3 rounded-lg shadow-md flex flex-col justify-between space-y-2">
-            <div className="flex-grow">
-              <h3 className="font-bold text-base">{product.name}</h3>
-              <p className="text-sm text-slate-500 break-words">{product.description || 'Sem descrição'}</p>
+        <div className="bg-white text-secondary p-4 rounded-xl shadow-md space-y-3">
+            <div className="flex justify-between items-start gap-4">
+                <div>
+                    <h3 className="font-bold text-lg">{product.name}</h3>
+                    <p className="text-sm text-slate-500">{product.description || 'Sem descrição'}</p>
+                </div>
+                <span className="font-bold text-primary text-lg whitespace-nowrap">R$ {product.price.toFixed(2).replace('.', ',')}</span>
             </div>
-            <div className="flex justify-between items-center text-sm pt-2">
-                <span className="font-semibold text-primary text-base">R$ {product.price.toFixed(2)}</span>
-                <span className={`font-semibold ${stockColor}`}>Estoque: {product.quantity}</span>
-            </div>
-            <div className="flex gap-2 pt-2 border-t border-slate-100">
-                <button onClick={() => onEdit(product)} className="w-full bg-slate-200 text-slate-800 py-1.5 px-3 rounded text-sm hover:bg-slate-300 transition-colors">
-                    Editar
-                </button>
-                <button onClick={handleDelete} className="w-full bg-red-100 text-red-700 py-1.5 px-3 rounded text-sm hover:bg-red-200 transition-colors">
-                    Excluir
-                </button>
+            <div className="flex justify-between items-center text-sm pt-3 border-t border-slate-100">
+                <span className={`font-semibold px-2.5 py-1 rounded-full text-xs ${stockColor} ${stockBgColor}`}>
+                    {product.quantity} em estoque
+                </span>
+                <div className="flex gap-2">
+                    <button onClick={() => onEdit(product)} className="p-2 text-slate-600 hover:text-primary hover:bg-slate-100 rounded-full transition-colors" aria-label={`Editar ${product.name}`}>
+                        <EditIcon />
+                    </button>
+                    <button onClick={handleDelete} className="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" aria-label={`Excluir ${product.name}`}>
+                        <TrashIcon />
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -49,13 +58,13 @@ const ProductsList: React.FC<ProductsListProps> = ({ products, onEdit, onDelete 
     return (
         <div>
             {products.length === 0 ? (
-                <div className="text-center py-10 px-4 bg-white rounded-lg shadow-md">
+                <div className="text-center py-10 px-4 bg-white rounded-lg shadow-md text-secondary">
                     <p className="text-slate-500">Nenhum produto cadastrado.</p>
                     <p className="text-sm text-slate-400 mt-2">Clique no botão '+' para adicionar seu primeiro produto.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-3 gap-3">
-                    {products.map(product => (
+                <div className="space-y-3">
+                    {products.sort((a, b) => a.name.localeCompare(b.name)).map(product => (
                         <ProductCard key={product.id} product={product} onEdit={onEdit} onDelete={onDelete} />
                     ))}
                 </div>
