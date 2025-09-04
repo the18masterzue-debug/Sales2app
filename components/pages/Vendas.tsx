@@ -16,24 +16,24 @@ const SaleProductCard: React.FC<SaleProductCardProps> = ({ product, onClick }) =
     return (
         <button
             onClick={onClick}
-            className="w-full bg-white text-secondary p-6 rounded-3xl shadow-lg text-left transition-transform transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-main-dark-green focus:ring-primary"
+            className="w-full bg-white text-secondary p-4 rounded-xl shadow-md text-left transition-transform transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-main-dark-green focus:ring-primary space-y-3"
             aria-label={`Vender ${product.name}`}
         >
-            <h3 className="font-bold text-2xl">{product.name}</h3>
-            {product.description && <p className="text-sm text-slate-500 mt-1">{product.description}</p>}
-
-            <div className="mt-4">
-                <p className="text-4xl font-bold tracking-tight text-primary">
+            <div className="flex justify-between items-start gap-4">
+                <div>
+                    <h3 className="font-bold text-lg">{product.name}</h3>
+                    {product.description && <p className="text-sm text-slate-500">{product.description}</p>}
+                </div>
+                <span className="font-bold text-primary text-lg whitespace-nowrap">
                     R$ {product.price.toFixed(2).replace('.', ',')}
-                </p>
-                 <p className="text-sm font-medium text-slate-500 mt-1">Preço por unidade</p>
+                </span>
             </div>
 
-            <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-100">
+            <div className="flex justify-between items-center text-sm pt-3 border-t border-slate-100">
                 <span className={`font-semibold px-2.5 py-1 rounded-full text-xs ${stockColor} ${stockBgColor}`}>
                     {product.quantity} em estoque
                 </span>
-                <div className="text-sm font-medium text-primary flex items-center gap-1.5" aria-hidden="true">
+                <div className="font-medium text-primary flex items-center gap-1.5" aria-hidden="true">
                     Vender
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </div>
@@ -58,7 +58,7 @@ const Vendas: React.FC<VendasProps> = ({ products, onInitiateSale }) => {
                      <p className="text-sm text-slate-400 mt-2">Cadastre novos produtos ou atualize o estoque na aba 'Produtos'.</p>
                 </div>
             ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                     {availableProducts.sort((a,b) => a.name.localeCompare(b.name)).map(product => (
                         <SaleProductCard 
                             key={product.id} 
