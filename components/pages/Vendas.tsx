@@ -68,7 +68,7 @@ const Vendas: React.FC<VendasProps> = ({ products, onInitiateSale }) => {
                      <p className="text-sm text-slate-400 mt-2">Vá para 'Configurações' para adicionar novos produtos ou atualizar o estoque.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {availableProducts.map(product => (
                         <SaleProductCard 
                             key={product.id} 
