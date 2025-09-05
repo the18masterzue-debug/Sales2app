@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import type { Product } from '../../types';
 
 interface AddProductFormProps {
-    onAddProduct: (product: Omit<Product, 'id' | 'created_at'>) => void;
+    onAddProduct: (product: Omit<Product, 'id'>) => void;
     onUpdateProduct: (product: Product) => void;
     existingProduct: Product | null;
     onClose: () => void;
@@ -14,6 +14,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onAddProduct, onUpdateP
     const [price, setPrice] = useState('');
     const [quantity, setQuantity] = useState('');
     const [description, setDescription] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
 
     useEffect(() => {
         if (existingProduct) {
@@ -21,11 +22,13 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onAddProduct, onUpdateP
             setPrice(existingProduct.price.toString());
             setQuantity(existingProduct.quantity.toString());
             setDescription(existingProduct.description || '');
+            setImageUrl(existingProduct.imageUrl || '');
         } else {
             setName('');
             setPrice('');
             setQuantity('');
             setDescription('');
+            setImageUrl('');
         }
     }, [existingProduct]);
 
@@ -35,11 +38,12 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onAddProduct, onUpdateP
             name,
             price: parseFloat(price),
             quantity: parseInt(quantity, 10),
-            description
+            description,
+            imageUrl
         };
 
         if (existingProduct) {
-            onUpdateProduct({ ...existingProduct, ...productData });
+            onUpdateProduct({ ...productData, id: existingProduct.id });
         } else {
             onAddProduct(productData);
         }
@@ -66,6 +70,10 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onAddProduct, onUpdateP
              <div>
                 <label htmlFor="description" className="block text-sm font-medium text-slate-700">Descrição (Opcional)</label>
                 <textarea id="description" value={description} onChange={e => setDescription(e.target.value)} rows={3} className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm text-slate-900"></textarea>
+            </div>
+             <div>
+                <label htmlFor="imageUrl" className="block text-sm font-medium text-slate-700">URL da Imagem (Opcional)</label>
+                <input type="text" id="imageUrl" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://exemplo.com/imagem.jpg" className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm text-slate-900"/>
             </div>
             <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300">Cancelar</button>

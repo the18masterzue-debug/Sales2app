@@ -1,16 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
-import type { Product, Sale } from '../../types';
+import type { Product } from '../../types';
 
 interface RecordSaleFormProps {
     products: Product[];
-    onRecordSale: (sale: Omit<Sale, 'id' | 'created_at'>) => Promise<boolean>;
+    onRecordSale: (sale: { productId: string; quantitySold: number; totalPrice: number; }) => boolean;
     onClose: () => void;
     initialProduct: Product | null;
 }
 
 const RecordSaleForm: React.FC<RecordSaleFormProps> = ({ products, onRecordSale, onClose, initialProduct }) => {
-    const [productId, setProductId] = useState<number | ''>('');
+    const [productId, setProductId] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [error, setError] = useState('');
 
@@ -25,11 +24,11 @@ const RecordSaleForm: React.FC<RecordSaleFormProps> = ({ products, onRecordSale,
         }
     }, [availableProducts, productId, initialProduct]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
-        if (!selectedProduct || !productId) {
+        if (!selectedProduct) {
             setError('Produto inválido.');
             return;
         }
@@ -39,10 +38,10 @@ const RecordSaleForm: React.FC<RecordSaleFormProps> = ({ products, onRecordSale,
             return;
         }
 
-        const success = await onRecordSale({
-            product_id: productId,
-            quantity_sold: quantity,
-            total_price: selectedProduct.price * quantity,
+        const success = onRecordSale({
+            productId,
+            quantitySold: quantity,
+            totalPrice: selectedProduct.price * quantity,
         });
         
         if (success) {
@@ -56,7 +55,7 @@ const RecordSaleForm: React.FC<RecordSaleFormProps> = ({ products, onRecordSale,
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
                 <label htmlFor="product" className="block text-sm font-medium text-slate-700">Produto</label>
-                <select id="product" value={productId} onChange={e => setProductId(Number(e.target.value))} required className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md text-slate-900">
+                <select id="product" value={productId} onChange={e => setProductId(e.target.value)} required className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md text-slate-900">
                     {availableProducts.length === 0 ? (
                         <option disabled>Nenhum produto com estoque</option>
                     ) : (

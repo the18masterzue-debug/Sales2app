@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import type { Product, Sale } from '../../types';
 import { ArrowUpIcon } from '../icons/Icons';
@@ -12,7 +11,7 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ products, sales, salesGoal }) => {
 
     const totalRevenue = useMemo(() =>
-        sales.reduce((acc, sale) => acc + sale.total_price, 0),
+        sales.reduce((acc, sale) => acc + sale.totalPrice, 0),
         [sales]
     );
 
@@ -26,11 +25,10 @@ const Dashboard: React.FC<DashboardProps> = ({ products, sales, salesGoal }) => 
         return Math.min((totalRevenue / salesGoal) * 100, 100);
     }, [totalRevenue, salesGoal]);
 
-
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex overflow-x-auto space-x-4 pb-4 -mx-4 px-4">
             {/* Card de Receita Total */}
-            <div className="bg-lime-card text-black p-6 rounded-3xl shadow-lg">
+            <div className="w-80 flex-shrink-0 bg-lime-card text-black p-6 rounded-3xl shadow-lg">
                 <div className="flex justify-between items-center text-sm font-medium">
                     <div className="bg-black text-white rounded-full p-2">
                         <ArrowUpIcon className="w-4 h-4" />
@@ -45,7 +43,7 @@ const Dashboard: React.FC<DashboardProps> = ({ products, sales, salesGoal }) => 
             </div>
 
             {/* Card de Meta Mensal */}
-            <div className="bg-white text-black p-6 rounded-3xl shadow-lg">
+            <div className="w-80 flex-shrink-0 bg-white text-black p-6 rounded-3xl shadow-lg">
                 <p className="text-sm font-medium text-slate-600">Meta Mensal</p>
                 <div className="mt-2">
                     <span className="text-4xl font-bold">R$ {totalRevenue.toFixed(2).replace('.',',')}</span>
@@ -58,7 +56,7 @@ const Dashboard: React.FC<DashboardProps> = ({ products, sales, salesGoal }) => 
             </div>
 
             {/* Card de Estoque Baixo */}
-            <div className="bg-purple-card text-white p-6 rounded-3xl shadow-lg md:col-span-2">
+            <div className="w-80 flex-shrink-0 bg-purple-card text-white p-6 rounded-3xl shadow-lg">
                 <p className="text-xs font-semibold tracking-wide">ALERTA</p>
                 <p className="text-sm font-medium mt-2">Estoque Baixo</p>
                 <p className="text-6xl font-bold tracking-tight mt-1">{lowStockItems}</p>

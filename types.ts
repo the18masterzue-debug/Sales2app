@@ -1,25 +1,23 @@
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
   quantity: number;
   description?: string;
-  created_at: string;
+  imageUrl?: string;
 }
 
 export interface Sale {
-  id: number;
-  product_id: number;
-  quantity_sold: number;
-  total_price: number;
-  created_at: string;
+  id: string;
+  productId: string;
+  quantitySold: number;
+  totalPrice: number;
+  date: string;
 }
 
 export enum ViewEnum {
     DASHBOARD = 'dashboard',
     VENDAS = 'vendas',
-    PRODUCTS = 'produtos',
-    HISTORY = 'histórico',
     CONFIGURACOES = 'configurações'
 }
 

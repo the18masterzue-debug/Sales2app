@@ -1,7 +1,7 @@
 import React from 'react';
 import type { View } from '../types';
 import { ViewEnum } from '../types';
-import { HomeIcon, PackageIcon, HistoryIcon, ShoppingCartIcon, SettingsIcon } from './icons/Icons';
+import { HomeIcon, SettingsIcon, ShoppingCartIcon } from './icons/Icons';
 
 interface BottomNavProps {
     activeView: View;
@@ -26,30 +26,18 @@ const NavItem: React.FC<{
 
 const BottomNav: React.FC<BottomNavProps> = ({ activeView, setActiveView }) => {
     return (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_5px_-1px_rgba(0,0,0,0.1)] h-16 grid grid-cols-5 z-20">
+        <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_5px_-1px_rgba(0,0,0,0.1)] h-16 grid grid-cols-3 z-20">
             <NavItem
                 icon={<HomeIcon />}
                 label={ViewEnum.DASHBOARD}
                 isActive={activeView === ViewEnum.DASHBOARD}
                 onClick={() => setActiveView(ViewEnum.DASHBOARD)}
             />
-             <NavItem
+            <NavItem
                 icon={<ShoppingCartIcon />}
                 label={ViewEnum.VENDAS}
                 isActive={activeView === ViewEnum.VENDAS}
                 onClick={() => setActiveView(ViewEnum.VENDAS)}
-            />
-            <NavItem
-                icon={<PackageIcon />}
-                label={ViewEnum.PRODUCTS}
-                isActive={activeView === ViewEnum.PRODUCTS}
-                onClick={() => setActiveView(ViewEnum.PRODUCTS)}
-            />
-            <NavItem
-                icon={<HistoryIcon />}
-                label={ViewEnum.HISTORY}
-                isActive={activeView === ViewEnum.HISTORY}
-                onClick={() => setActiveView(ViewEnum.HISTORY)}
             />
              <NavItem
                 icon={<SettingsIcon />}
