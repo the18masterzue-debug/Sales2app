@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import type { Product, Sale } from '../../types';
-import { ArrowUpIcon } from '../icons/Icons';
+import { ArrowUpIcon, DollarSignIcon } from '../icons/Icons';
 
 interface DashboardProps {
     products: Product[];
@@ -9,6 +9,13 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ products, sales, salesGoal }) => {
+
+    const todaysSales = useMemo(() => {
+        const today = new Date().toDateString();
+        return sales
+            .filter(sale => new Date(sale.created_at).toDateString() === today)
+            .reduce((acc, sale) => acc + sale.total_price, 0);
+    }, [sales]);
 
     const totalRevenue = useMemo(() =>
         sales.reduce((acc, sale) => acc + sale.total_price, 0),
@@ -26,9 +33,24 @@ const Dashboard: React.FC<DashboardProps> = ({ products, sales, salesGoal }) => 
     }, [totalRevenue, salesGoal]);
 
     return (
-        <div className="flex overflow-x-auto space-x-4 pb-4 -mx-4 px-4">
+        <div className="flex flex-col md:flex-row md:overflow-x-auto space-y-4 md:space-y-0 md:space-x-4 pb-4 md:-mx-4 md:px-4">
+            {/* Card de Vendas de Hoje */}
+            <div className="w-full md:w-80 flex-shrink-0 bg-blue-card text-black p-6 rounded-3xl shadow-lg">
+                <div className="flex justify-between items-center text-sm font-medium">
+                    <div className="bg-black text-white rounded-full p-2">
+                        <DollarSignIcon className="w-4 h-4" />
+                    </div>
+                </div>
+                <div className="mt-4">
+                    <p className="text-5xl font-bold tracking-tight">
+                        R$ {todaysSales.toFixed(2).replace('.',',')}
+                    </p>
+                    <p className="text-sm font-medium mt-1">Vendas de Hoje</p>
+                </div>
+            </div>
+
             {/* Card de Receita Total */}
-            <div className="w-80 flex-shrink-0 bg-lime-card text-black p-6 rounded-3xl shadow-lg">
+            <div className="w-full md:w-80 flex-shrink-0 bg-lime-card text-black p-6 rounded-3xl shadow-lg">
                 <div className="flex justify-between items-center text-sm font-medium">
                     <div className="bg-black text-white rounded-full p-2">
                         <ArrowUpIcon className="w-4 h-4" />
@@ -43,7 +65,7 @@ const Dashboard: React.FC<DashboardProps> = ({ products, sales, salesGoal }) => 
             </div>
 
             {/* Card de Meta Mensal */}
-            <div className="w-80 flex-shrink-0 bg-white text-black p-6 rounded-3xl shadow-lg">
+            <div className="w-full md:w-80 flex-shrink-0 bg-white text-black p-6 rounded-3xl shadow-lg">
                 <p className="text-sm font-medium text-slate-600">Meta Mensal</p>
                 <div className="mt-2">
                     <span className="text-4xl font-bold">R$ {totalRevenue.toFixed(2).replace('.',',')}</span>
@@ -56,7 +78,7 @@ const Dashboard: React.FC<DashboardProps> = ({ products, sales, salesGoal }) => 
             </div>
 
             {/* Card de Estoque Baixo */}
-            <div className="w-80 flex-shrink-0 bg-purple-card text-white p-6 rounded-3xl shadow-lg">
+            <div className="w-full md:w-80 flex-shrink-0 bg-purple-card text-white p-6 rounded-3xl shadow-lg">
                 <p className="text-xs font-semibold tracking-wide">ALERTA</p>
                 <p className="text-sm font-medium mt-2">Estoque Baixo</p>
                 <p className="text-6xl font-bold tracking-tight mt-1">{lowStockItems}</p>
