@@ -1,18 +1,19 @@
 export interface Product {
-  id: string;
+  id: number;
   name: string;
   price: number;
   quantity: number;
   description?: string;
-  imageUrl?: string;
+  image_url?: string;
+  created_at?: string;
 }
 
 export interface Sale {
-  id: string;
-  productId: string;
-  quantitySold: number;
-  totalPrice: number;
-  date: string;
+  id: number;
+  product_id: number;
+  quantity_sold: number;
+  total_price: number;
+  created_at: string;
 }
 
 export enum ViewEnum {

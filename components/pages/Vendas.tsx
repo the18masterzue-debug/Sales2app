@@ -21,8 +21,8 @@ const SaleProductCard: React.FC<SaleProductCardProps> = ({ product, onClick }) =
             aria-label={`Vender ${product.name}`}
         >
             <div className="h-32 bg-slate-100 flex items-center justify-center">
-                 {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                 {product.image_url ? (
+                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
                 ) : (
                     <PackageIcon />
                 )}
@@ -69,7 +69,7 @@ const Vendas: React.FC<VendasProps> = ({ products, onInitiateSale }) => {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {availableProducts.sort((a,b) => a.name.localeCompare(b.name)).map(product => (
+                    {availableProducts.map(product => (
                         <SaleProductCard 
                             key={product.id} 
                             product={product} 

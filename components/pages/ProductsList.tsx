@@ -5,7 +5,7 @@ import { EditIcon, TrashIcon, PackageIcon } from '../icons/Icons';
 interface ProductCardProps {
     product: Product;
     onEdit: (product: Product) => void;
-    onDelete: (productId: string) => void;
+    onDelete: (productId: number) => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDelete }) => {
@@ -24,8 +24,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDelete }) 
     return (
         <div className="bg-white text-secondary p-4 rounded-xl shadow-md flex gap-4 items-center">
             <div className="w-24 h-24 flex-shrink-0 bg-slate-100 rounded-lg flex items-center justify-center">
-                {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover rounded-lg" />
+                {product.image_url ? (
+                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover rounded-lg" />
                 ) : (
                     <PackageIcon />
                 )}
@@ -60,7 +60,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDelete }) 
 interface ProductsListProps {
     products: Product[];
     onEdit: (product: Product) => void;
-    onDelete: (productId: string) => void;
+    onDelete: (productId: number) => void;
 }
 
 const ProductsList: React.FC<ProductsListProps> = ({ products, onEdit, onDelete }) => {
@@ -73,7 +73,7 @@ const ProductsList: React.FC<ProductsListProps> = ({ products, onEdit, onDelete 
                 </div>
             ) : (
                 <div className="space-y-3">
-                    {products.sort((a, b) => a.name.localeCompare(b.name)).map(product => (
+                    {products.map(product => (
                         <ProductCard key={product.id} product={product} onEdit={onEdit} onDelete={onDelete} />
                     ))}
                 </div>

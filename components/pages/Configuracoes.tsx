@@ -9,7 +9,7 @@ interface ConfiguracoesProps {
     products: Product[];
     onAddProduct: () => void;
     onEditProduct: (product: Product) => void;
-    onDeleteProduct: (productId: string) => void;
+    onDeleteProduct: (productId: number) => void;
 }
 
 const Configuracoes: React.FC<ConfiguracoesProps> = ({ currentGoal, onSave, products, onAddProduct, onEditProduct, onDeleteProduct }) => {

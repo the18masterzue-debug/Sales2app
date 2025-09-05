@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import type { Product } from '../../types';
 
 interface AddProductFormProps {
-    onAddProduct: (product: Omit<Product, 'id'>) => void;
+    onAddProduct: (product: Omit<Product, 'id' | 'created_at'>) => void;
     onUpdateProduct: (product: Product) => void;
     existingProduct: Product | null;
     onClose: () => void;
@@ -22,7 +21,7 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onAddProduct, onUpdateP
             setPrice(existingProduct.price.toString());
             setQuantity(existingProduct.quantity.toString());
             setDescription(existingProduct.description || '');
-            setImageUrl(existingProduct.imageUrl || '');
+            setImageUrl(existingProduct.image_url || '');
         } else {
             setName('');
             setPrice('');
@@ -39,11 +38,11 @@ const AddProductForm: React.FC<AddProductFormProps> = ({ onAddProduct, onUpdateP
             price: parseFloat(price),
             quantity: parseInt(quantity, 10),
             description,
-            imageUrl
+            image_url: imageUrl
         };
 
         if (existingProduct) {
-            onUpdateProduct({ ...productData, id: existingProduct.id });
+            onUpdateProduct({ ...productData, id: existingProduct.id, created_at: existingProduct.created_at });
         } else {
             onAddProduct(productData);
         }

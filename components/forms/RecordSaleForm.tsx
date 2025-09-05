@@ -3,15 +3,16 @@ import type { Product } from '../../types';
 
 interface RecordSaleFormProps {
     products: Product[];
-    onRecordSale: (sale: { productId: string; quantitySold: number; totalPrice: number; }) => boolean;
+    onRecordSale: (sale: { product_id: number; quantity_sold: number; total_price: number; }) => Promise<boolean>;
     onClose: () => void;
     initialProduct: Product | null;
 }
 
 const RecordSaleForm: React.FC<RecordSaleFormProps> = ({ products, onRecordSale, onClose, initialProduct }) => {
-    const [productId, setProductId] = useState('');
+    const [productId, setProductId] = useState<number | ''>('');
     const [quantity, setQuantity] = useState(1);
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const availableProducts = products.filter(p => p.quantity > 0);
     const selectedProduct = products.find(p => p.id === productId);
@@ -24,38 +25,42 @@ const RecordSaleForm: React.FC<RecordSaleFormProps> = ({ products, onRecordSale,
         }
     }, [availableProducts, productId, initialProduct]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setIsSubmitting(true);
 
         if (!selectedProduct) {
             setError('Produto inválido.');
+            setIsSubmitting(false);
             return;
         }
 
         if (quantity > selectedProduct.quantity) {
             setError(`Estoque insuficiente. Disponível: ${selectedProduct.quantity}`);
+            setIsSubmitting(false);
             return;
         }
 
-        const success = onRecordSale({
-            productId,
-            quantitySold: quantity,
-            totalPrice: selectedProduct.price * quantity,
+        const success = await onRecordSale({
+            product_id: selectedProduct.id,
+            quantity_sold: quantity,
+            total_price: selectedProduct.price * quantity,
         });
         
         if (success) {
             onClose();
         } else {
-            setError('Falha ao registrar a venda.');
+            setError('Falha ao registrar a venda. Tente novamente.');
         }
+        setIsSubmitting(false);
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
                 <label htmlFor="product" className="block text-sm font-medium text-slate-700">Produto</label>
-                <select id="product" value={productId} onChange={e => setProductId(e.target.value)} required className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md text-slate-900">
+                <select id="product" value={productId} onChange={e => setProductId(Number(e.target.value))} required className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md text-slate-900">
                     {availableProducts.length === 0 ? (
                         <option disabled>Nenhum produto com estoque</option>
                     ) : (
@@ -72,7 +77,7 @@ const RecordSaleForm: React.FC<RecordSaleFormProps> = ({ products, onRecordSale,
 
             {selectedProduct && (
                 <div className="text-right font-bold text-lg text-secondary">
-                    Total: R$ {(selectedProduct.price * (quantity || 0)).toFixed(2)}
+                    Total: R$ {(selectedProduct.price * (quantity || 0)).toFixed(2).replace('.', ',')}
                 </div>
             )}
 
@@ -80,7 +85,9 @@ const RecordSaleForm: React.FC<RecordSaleFormProps> = ({ products, onRecordSale,
 
             <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300">Cancelar</button>
-                <button type="submit" disabled={!productId || availableProducts.length === 0} className="px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-700 disabled:bg-slate-400">Registrar Venda</button>
+                <button type="submit" disabled={!productId || availableProducts.length === 0 || isSubmitting} className="px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-700 disabled:bg-slate-400">
+                    {isSubmitting ? 'Registrando...' : 'Registrar Venda'}
+                </button>
             </div>
         </form>
     );
