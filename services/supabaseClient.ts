@@ -1,20 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 
+// As credenciais foram fornecidas pelo usuário e hardcoded para fazer o aplicativo funcionar.
+// Em um ambiente de produção, essas chaves devem ser gerenciadas por meio de variáveis de ambiente.
+const supabaseUrl = 'https://rgdnrywmhhzvdsqnolwr.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZG5yeXdtaGh6dmRzcW5vbHdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMjkxNDgsImV4cCI6MjA3MjYwNTE0OH0.cAPxL_60iKYVL126uFc5qxuqYCVgA2r0Depn4ZL__y0';
+
+
 let supabaseInstance = null;
 let errorMessage: string | null = null;
 
-try {
-    const SUPABASE_URL = process.env.SUPABASE_URL;
-    const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
-
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-        throw new Error("Credenciais do Supabase não encontradas nas variáveis de ambiente.");
+if (!supabaseUrl || !supabaseAnonKey) {
+    errorMessage = "As credenciais do Supabase (URL e Chave Anônima) não foram fornecidas no código.";
+    console.error(errorMessage);
+} else {
+    try {
+        supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+    } catch (error) {
+        console.error("Erro ao inicializar Supabase:", error);
+        errorMessage = `Falha ao criar o cliente Supabase. Verifique as credenciais. Detalhes: ${error.message}`;
     }
-    supabaseInstance = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-} catch (error) {
-    console.error("Erro ao inicializar Supabase:", error);
-    errorMessage = "A configuração do Supabase está incompleta. Verifique se as variáveis de ambiente SUPABASE_URL e SUPABASE_ANON_KEY estão definidas e corretas.";
 }
 
 export const supabase = supabaseInstance;
